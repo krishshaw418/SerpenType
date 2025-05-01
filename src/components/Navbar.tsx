@@ -1,0 +1,69 @@
+// import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import RestartIcon from "../assets/refresh_20dp_000000_FILL0_wght400_GRAD0_opsz20.png"
+import { ModeToggle } from "./mode-toggle"
+
+function Navbar() {
+  // const [isDarkMode, setIsDarkMode] = useState(false);
+  return (
+    <nav className="flex justify-between items-center p-4 border-b">
+      <div className="text-2xl font-bold flex gap-2">
+      <Avatar>
+      <AvatarImage src="/2-removebg-preview.png" alt="@shadcn" className="invert-0 dark:invert w-8 h-8"/>
+      <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
+      SerpenType
+      </div>
+      <div className="hidden md:flex gap-4">
+      <Button variant="ghost">15s</Button>
+      <Button variant="ghost">30s</Button>
+      <Button variant="ghost">60s</Button>
+        <div className="flex items-center gap-5">
+        <TooltipProvider>
+          <Tooltip>
+          <TooltipTrigger className="h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5">
+            <img src={RestartIcon} alt="restart icon" className="invert-0 dark:invert "/>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Retake Test</p>
+          </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <ModeToggle/>
+        </div>
+      </div>
+
+      {/* Mobile Responsive Sheet */}
+      <div className="md:hidden">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline">Menu</Button>
+          </SheetTrigger>
+          <SheetContent side="right">
+            <div className="flex flex-col gap-4 mt-8">
+              <Button variant="outline">15s Mode</Button>
+              <Button variant="outline">30s Mode</Button>
+              <Button variant="outline">60s Mode</Button>
+              <Button variant="outline">Restart</Button>
+              <Button variant="outline">Settings</Button>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </nav>
+  )
+}
+
+export default Navbar
