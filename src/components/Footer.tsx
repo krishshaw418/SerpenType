@@ -13,9 +13,9 @@ import CopyRightIcon from "../assets/copyright_20dp_000000_FILL0_wght400_GRAD0_o
 function Footer() {
   return (
     <div>
-      <div className="flex pl-4 py-4 items-center gap-2 justify-center absolute bottom-0">
+      <div className="flex pl-4 py-5 items-center gap-1.5 justify-center absolute bottom-0">
         <img src={CopyRightIcon} alt="copyright icon" className="invert-0 dark:invert"/>
-        copyright 2025
+        <h6 className="text-sm font-semibold">copyright 2025</h6>
       </div>
     <div className="flex py-3 items-center absolute bottom-0 right-0">
     <Dialog>

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet"
 import {
   Avatar,
-  AvatarFallback,
+  // AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
 import {
@@ -22,7 +22,6 @@ function Navbar() {
       <div className="text-2xl font-bold flex gap-2">
       <Avatar>
       <AvatarImage src="/2-removebg-preview.png" alt="@shadcn" className="invert-0 dark:invert w-8 h-8"/>
-      <AvatarFallback>CN</AvatarFallback>
       </Avatar>
       SerpenType
       </div>
