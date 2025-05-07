@@ -36,12 +36,12 @@ function InputField() {
     const inputChars = userInput.split('');
 
     return (
-    <div className='flex flex-col items-center justify-center'>
+    <div className='flex flex-col items-center justify-center h-150 w-screen min-h-[100px]'> 
     <div
       ref={containerRef}
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      className="outline-none font-mono text-xl flex flex-wrap gap-x-2 p-4 max-w-3xl"
+      className="outline-none font-mono text-xl flex flex-wrap gap-x-2 p-4 max-w-5xl w-fit justify-center"
     >
       {words.map((word, wordIdx) => (
         <div key={wordIdx} className="flex gap-[1px]">
