@@ -12,7 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import RestartIcon from "../assets/refresh_20dp_000000_FILL0_wght400_GRAD0_opsz20.png"
+import DownloadIcon from "../assets/download_20dp_FFFFFF_FILL0_wght400_GRAD0_opsz20.png" 
 import { ModeToggle } from "./mode-toggle"
 
 function Navbar() {
@@ -33,10 +33,10 @@ function Navbar() {
         <TooltipProvider>
           <Tooltip>
           <TooltipTrigger className="h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5">
-            <img src={RestartIcon} alt="restart icon" className="invert-0 dark:invert "/>
+            <img src={DownloadIcon} alt="download icon" className="invert-100 dark:invert-0"/>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Retake Test</p>
+            <p>Download Metrics</p>
           </TooltipContent>
           </Tooltip>
         </TooltipProvider>

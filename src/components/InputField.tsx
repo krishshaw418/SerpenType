@@ -1,13 +1,24 @@
 import { generate } from 'random-words';
 import { useEffect, useState, useRef } from 'react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import RestartIcon from "../assets/refresh_20dp_000000_FILL0_wght400_GRAD0_opsz20.png"
+
 function InputField() {
     const [words, setWords] = useState<String[]>([]);
     const [userInput, setUserInput] = useState('');
     const containerRef = useRef<HTMLDivElement>(null);
+    const setRandomWords = () => {
+      containerRef.current?.focus();
+      const randomWords: String[] = generate(30) as String[];
+      setWords(randomWords);
+    };
     useEffect(() => {
-        containerRef.current?.focus();
-        const randomWords: String[] = generate(30) as String[];
-        setWords(randomWords);
+        setRandomWords();
     },[])
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -24,7 +35,8 @@ function InputField() {
     const allChars = words.join(' ').split('');
     const inputChars = userInput.split('');
 
-    return (<div className='flex items-center justify-center'>
+    return (
+    <div className='flex flex-col items-center justify-center'>
     <div
       ref={containerRef}
       tabIndex={0}
@@ -55,6 +67,18 @@ function InputField() {
           })}
         </div>
       ))}
+    </div>
+    <div className="flex items-center gap-5">
+        <TooltipProvider>
+          <Tooltip>
+          <TooltipTrigger className="h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5" onClick={() => {setRandomWords()}}>
+            <img src={RestartIcon} alt="download icon" className="invert-0 dark:invert"/>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Restart Test</p>
+          </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
     </div>
     </div>
     )
