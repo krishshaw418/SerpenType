@@ -12,16 +12,19 @@ function InputField() {
     const [words, setWords] = useState<String[]>([]);
     const [userInput, setUserInput] = useState('');
     const containerRef = useRef<HTMLDivElement>(null);
+
     const setRandomWords = () => {
-      containerRef.current?.focus();
-      const randomWords: String[] = generate(30) as String[];
+      const randomWords: String[] = generate(50) as String[];
       setWords(randomWords);
     };
+    
     useEffect(() => {
+        containerRef.current?.focus();
         setRandomWords();
     },[])
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        containerRef.current?.focus();
         if (e.key.length === 1 && e.key !== ' ') {
             setUserInput((prev) => prev + e.key);
           } else if (e.key === ' ') {
@@ -71,7 +74,7 @@ function InputField() {
     <div className="flex items-center gap-5">
         <TooltipProvider>
           <Tooltip>
-          <TooltipTrigger className="h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5" onClick={() => {setRandomWords()}}>
+          <TooltipTrigger className="h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5" onClick={() => {setRandomWords(); containerRef.current?.focus();}}>
             <img src={RestartIcon} alt="download icon" className="invert-0 dark:invert"/>
           </TooltipTrigger>
           <TooltipContent>

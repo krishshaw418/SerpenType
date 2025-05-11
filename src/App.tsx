@@ -1,19 +1,20 @@
-import { ThemeProvider } from "@/components/theme-provider"
+import {Routes, BrowserRouter, Route} from "react-router-dom";
+import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import InputField from "./components/InputField";
-// import PerformanceMetrics from "./components/PerformanceMetrics";
-import Timer from "./components/Timer";
+import Landing from "./Pages/Landing";
+import Metrics from "./Pages/Metrics";
 export default function App(){
     return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <div className="min-h-screen flex flex-col">
-            <Navbar/>
-            <InputField/>
-            <Footer/>
-            {/* <PerformanceMetrics/> */}
-            <Timer/>
-        </div>
+    <div className="min-h-screen">
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <Navbar/>
+            <Routes>
+                <Route path="/" element={<Landing/>}/>
+                <Route path="/metrics" element={<Metrics/>}/>
+            </Routes>
+        <Footer/>
     </ThemeProvider>
+    </div>
     )
 }
