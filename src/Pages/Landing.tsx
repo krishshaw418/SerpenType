@@ -3,7 +3,7 @@ import Timer from "../components/Timer";
 
 function Landing() {
   return (
-    <div>
+    <div className="flex flex-col">
             <WordsDisplayArea/>
             <Timer/>
     </div>

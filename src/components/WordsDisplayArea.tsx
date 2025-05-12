@@ -1,70 +1,126 @@
-import { useState, useEffect, useRef } from 'react';
-import { generate } from 'random-words';
+import React, { useEffect, useRef, useState } from "react";
+import { generate } from "random-words";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 import RestartIcon from "../assets/refresh_20dp_000000_FILL0_wght400_GRAD0_opsz20.png";
 
-function WordsDisplayArea() {
-    const [words, setWords] = useState<String[]>([]);
-    const [userInput, setUserInput] = useState('');
-    const containerRef = useRef<HTMLDivElement>(null);
 
-    const setRandomWords = () => {
-        setWords(generate(30) as String[]);
-        containerRef.current?.focus();
+const WordDisplayArea = () => {
+  const [words, setWords] = useState<string[]>([]);
+  const [userInput, setUserInput] = useState<string[][]>([]);
+  const [wordIdx, setWordIdx] = useState(0);
+  const [charIdx, setCharIdx] = useState(0);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const setRandomWords = () => {
+    const generatedWords = generate(30) as string[];
+    setWords(generatedWords);
+    setUserInput(generatedWords.map((w) => Array(w.length).fill("")));
+    setWordIdx(0);
+    setCharIdx(0);
+  }
+
+  useEffect(() => {
+    // Generate 30 random words on mount
+        setRandomWords();
+  }, []);
+
+  useEffect(() => {
+    containerRef.current?.focus();
+  }, [words]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (words.length === 0) return;
+
+    const currentWord = userInput[wordIdx];
+    const wordLength = words[wordIdx].length;
+
+    if (e.key === "Backspace") {
+      e.preventDefault();
+
+      if (charIdx > 0) {
+        const updated = [...userInput];
+        updated[wordIdx][charIdx - 1] = "";
+        setUserInput(updated);
+        setCharIdx(charIdx - 1);
+      } else if (wordIdx > 0) {
+        setWordIdx(wordIdx - 1);
+        setCharIdx(words[wordIdx - 1].length);
+      }
+    } else if (e.key === " ") {
+      e.preventDefault();
+      setWordIdx((prev) => Math.min(prev + 1, words.length - 1));
+      setCharIdx(0);
+    } else if (e.key.length === 1) {
+      const updated = [...userInput];
+      if (charIdx < wordLength) {
+        updated[wordIdx][charIdx] = e.key;
+        setUserInput(updated);
+        setCharIdx(charIdx + 1);
+      }
     }
+  };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (e.key.length === 1 && e.key !== ' ') {
-            setUserInput((prev) => prev + e.key);
-          } else if (e.key === ' ') {
-            setUserInput((prev) => prev + ' ');
-          } else if (e.key === 'Backspace') {
-            setUserInput((prev) => prev.slice(0, -1));
-          }
-      };
-
-      const inputWords = userInput.split(' ');
-      console.log(inputWords);
-
-    useEffect(() => {
-    setRandomWords();
-    const handleKeyDown = () => {
-      containerRef.current?.focus();
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-    }, []);
+  const getCharClass = (typed: string, expected: string, isCursor: boolean) => {
+    if (typed === "") return isCursor ? "border-b-2 border-blue-500" : "text-gray-400";
+    if (typed === expected) return "text-green-500";
+    return "text-red-500";
+  };
 
   return (
-    <div className='flex flex-col gap-5 items-center justify-center h-150 w-screen'>
-        {/* Words Display Area */}
-        <div ref={containerRef} onKeyDown={handleKeyDown} tabIndex={0} className='outline-none justify-center flex flex-wrap overflow-hidden max-w-5xl'>
-            {words.map((word, wordIdx) => { return <p key={wordIdx} className='font-mono text-2xl p-2 inline'>{word}</p>})}
-        </div>
-        {/* Refresh button */}
-        <div className="flex items-center gap-5">
+    <div
+      ref={containerRef}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      className="outline-none text-2xl font-mono items-center flex flex-col h-150 justify-center gap-5"
+    >
+      <div className="flex flex-wrap justify-center max-w-5xl w-fit items-center gap-2 overflow-hidden">
+        {words.map((word, wIdx) => (
+        <span key={wIdx} className="mr-4">
+          {word.split("").map((char, cIdx) => {
+            const typedChar = userInput[wIdx]?.[cIdx] || "";
+            const isCursor = wordIdx === wIdx && charIdx === cIdx;
+
+            return (
+              <span
+                key={cIdx}
+                className={`${getCharClass(typedChar, char, isCursor)} ${
+                  isCursor ? "bg-blue-100" : ""
+                }`}
+              >
+                {char}
+              </span>
+            );
+          })}
+        </span>
+      ))}
+      </div>
+      <div className="flex items-center">
         <TooltipProvider>
           <Tooltip>
-          <TooltipTrigger className="h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer" onClick={() => {setUserInput(''); setRandomWords(); containerRef.current?.focus();}}>
-            <img src={RestartIcon} alt="retart icon" className="invert-0 dark:invert"/>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Restart Test</p>
-          </TooltipContent>
+            <TooltipTrigger
+              className="h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 cursor-pointer"
+              onClick={setRandomWords}
+            >
+              <img
+                src={RestartIcon}
+                alt="restart icon"
+                className="invert-0 dark:invert"
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Restart Test</p>
+            </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default WordsDisplayArea
+export default WordDisplayArea;
