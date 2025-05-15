@@ -7,22 +7,27 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import RestartIcon from "../assets/refresh_20dp_000000_FILL0_wght400_GRAD0_opsz20.png";
-
+import pointerIcon from "@/assets/arrow_selector_tool_20dp_000000_FILL0_wght400_GRAD0_opsz20.png";
 
 const WordDisplayArea = () => {
   const [words, setWords] = useState<string[]>([]);
   const [userInput, setUserInput] = useState<string[][]>([]);
   const [wordIdx, setWordIdx] = useState(0);
   const [charIdx, setCharIdx] = useState(0);
-
+  const [isBlur, setBlur] = useState(false);
+  const [isHidden, setHidden] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const setRandomWords = () => {
-    const generatedWords = generate(30) as string[];
-    setWords(generatedWords);
-    setUserInput(generatedWords.map((w) => Array(w.length).fill("")));
-    setWordIdx(0);
-    setCharIdx(0);
+    setHidden(true);
+    setTimeout(() => {
+      const generatedWords = generate(30) as string[];
+      setWords(generatedWords);
+      setUserInput(generatedWords.map((w) => Array(w.length).fill("")));
+      setWordIdx(0);
+      setCharIdx(0);
+      setHidden(false);
+    }, 290);
   }
 
   useEffect(() => {
@@ -37,7 +42,7 @@ const WordDisplayArea = () => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (words.length === 0) return;
 
-    const currentWord = userInput[wordIdx];
+    // const currentWord = userInput[wordIdx];
     const wordLength = words[wordIdx].length;
 
     if (e.key === "Backspace") {
@@ -77,9 +82,21 @@ const WordDisplayArea = () => {
       ref={containerRef}
       tabIndex={0}
       onKeyDown={handleKeyDown}
-      className="outline-none text-2xl font-mono items-center flex flex-col h-150 justify-center gap-5"
+      className={"outline-none text-3xl font-mono items-center flex flex-col h-150 justify-center gap-5"}
+      onFocus={() => setBlur(false)}
+      onBlur={() => setBlur(true)}
     >
-      <div className="flex flex-wrap justify-center max-w-5xl w-fit items-center gap-2 overflow-hidden">
+      {isBlur && (
+        <p className={`${isHidden? "hidden" : "top-[325px] absolute text-2xl font-bold flex items-center flex-row gap-3 pointer-events-none z-10"} `}>
+          <img
+            className="w-[22px] h-[22px] dark:invert"
+            src={pointerIcon}
+            alt="pointer-icon"
+          />
+          Click to focus
+        </p>
+      )}
+      <div className={` ${isHidden ? "hidden" : ""} ${isBlur ? "flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 blur-xs" : "flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 "}`}>
         {words.map((word, wIdx) => (
         <span key={wIdx} className="mr-4">
           {word.split("").map((char, cIdx) => {
@@ -100,7 +117,7 @@ const WordDisplayArea = () => {
         </span>
       ))}
       </div>
-      <div className="flex items-center">
+      <div className={`${isHidden ? "hidden" : ""} "flex items-center"`}>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger
