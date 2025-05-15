@@ -1,15 +1,30 @@
 import { useState, useEffect } from 'react'
 import { Button } from './ui/button';
+import { useContext } from 'react';
+import { TimerContext } from '@/context/TimerContext';
 function Timer() {
-    let time = 15;
-    const [seconds, setSeconds] = useState(time);
-    const [isActive, setIsActive] = useState(false);
+    const timerState = useContext(TimerContext);
 
+    if(!timerState) {
+        throw new Error("TimerContext is not defined");
+    }
+
+    const time = timerState.time; // updated value from context
+
+    const initial = time; // initial value for updated timer
+
+    const [start, setStart] = useState(time);
+
+    useEffect(() => {
+        setStart(time);
+    }, [time]);
+
+    const [isActive, setIsActive] = useState(false);
     useEffect(() => {
         let interval: undefined | ReturnType<typeof setTimeout>;
         if(isActive) {
             interval = setInterval(() => {
-                setSeconds((prev) => prev - 1);
+                setStart((prev) => prev - 1);
             }, 1000);
         }
         return () => clearInterval(interval);
@@ -19,12 +34,15 @@ function Timer() {
     const stopTimer = () => setIsActive(false);
     const resetTimer = () => {
         setIsActive(false);
-        setSeconds(time);
+        setStart(initial);
     }
+
+    if(start === 0)
+        resetTimer();
 
   return (
     <div className='flex justify-center items-center'>
-        <p>{seconds}s</p>
+        <p>{ start }s</p>
         <Button variant="ghost" onClick={() => {setIsActive(!isActive); return (isActive? stopTimer(): startTimer())}}>
             {isActive? <p>Stop</p>: <p>Start</p>}
         </Button>
