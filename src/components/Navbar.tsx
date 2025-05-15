@@ -14,9 +14,15 @@ import {
 } from "@/components/ui/tooltip";
 import DownloadIcon from "../assets/download_20dp_FFFFFF_FILL0_wght400_GRAD0_opsz20.png";
 import { ModeToggle } from "./mode-toggle";
+import { useContext } from "react";
+import { TimerContext } from "@/context/TimerContext";
 
 function Navbar() {
   const navigate = useNavigate();
+  const timerState = useContext(TimerContext);
+    if(!timerState) {
+        throw new Error("TimerContext is not defined");
+    }
   return (
     <nav className="flex justify-between items-center p-4 border-b">
       <div className="text-2xl font-bold flex gap-2">
@@ -26,9 +32,9 @@ function Navbar() {
       <button className="cursor-pointer" onClick={() => navigate("/")}>SerpenType</button>
       </div>
       <div className="hidden md:flex gap-4">
-      <Button className="cursor-pointer" variant="ghost">15s</Button>
-      <Button className="cursor-pointer" variant="ghost">30s</Button>
-      <Button className="cursor-pointer" variant="ghost">60s</Button>
+      <Button className="cursor-pointer" variant="ghost" onClick={() => timerState.setTime(15)}>15s</Button>
+      <Button className="cursor-pointer" variant="ghost" onClick={() => timerState.setTime(30)}>30s</Button>
+      <Button className="cursor-pointer" variant="ghost" onClick={() => timerState.setTime(60)}>60s</Button>
         <div className="flex items-center gap-5">
         <TooltipProvider>
           <Tooltip>
