@@ -8,9 +8,22 @@ import {
 } from "@/components/ui/tooltip";
 import RestartIcon from "../assets/refresh_20dp_000000_FILL0_wght400_GRAD0_opsz20.png";
 import pointerIcon from "@/assets/arrow_selector_tool_20dp_000000_FILL0_wght400_GRAD0_opsz20.png";
-// import Timer from "./Timer";
+import { useContext } from 'react';
+import { TimerContext } from '@/context/TimerStateContext';
+import { useNavigate } from "react-router-dom";
+// import { Button } from "./ui/button";
 
 const WordDisplayArea = () => {
+  const navigate = useNavigate();
+  const timerState = useContext(TimerContext);
+  if(!timerState) {
+        throw new Error("TimerContext is not defined");
+    }
+  const time = timerState.time; // updated value from context
+
+  const initial = time; // initial value for updated timer
+
+  const [start, setStart] = useState(time);
   const [words, setWords] = useState<string[]>([]);
   const [userInput, setUserInput] = useState<string[][]>([]);
   const [wordIdx, setWordIdx] = useState(0);
@@ -20,6 +33,7 @@ const WordDisplayArea = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const setRandomWords = () => {
+    resetTimer();
     setHidden(true);
     setTimeout(() => {
       const generatedWords = generate(30) as string[];
@@ -40,7 +54,38 @@ const WordDisplayArea = () => {
     containerRef.current?.focus();
   }, [words]);
 
+  useEffect(() => {
+        setStart(time);
+    }, [time]);
+
+  const [isActive, setIsActive] = useState(false);
+  useEffect(() => {
+      let interval: undefined | ReturnType<typeof setTimeout>;
+      if(isActive) {
+          interval = setInterval(() => {
+              setStart((prev) => prev - 1);
+          }, 1000);
+      }
+      return () => clearInterval(interval);
+  }, [isActive]);
+
+  const startTimer = () => setIsActive(true);
+  const stopTimer = () => setIsActive(false);
+  const resetTimer = () => {
+      setIsActive(false);
+      setStart(initial);
+  }
+
+  if(start === 0){
+    resetTimer();
+    stopTimer();
+    setHidden(true);
+    setTimeout(()=>{
+      navigate('/metrics');
+    },225)
+  }
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    startTimer();
     if (words.length === 0) return;
 
     // const currentWord = userInput[wordIdx];
@@ -79,16 +124,9 @@ const WordDisplayArea = () => {
   };
 
   return (
-    <div
-      ref={containerRef}
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-      className={"outline-none text-3xl font-mono items-center flex flex-col h-150 justify-center gap-5"}
-      onFocus={() => setBlur(false)}
-      onBlur={() => setBlur(true)}
-    >
+      <div className={"outline-none text-3xl font-mono items-center flex flex-col h-150 justify-center gap-5"}>
       {isBlur && (
-        <p className={`${isHidden? "hidden" : "top-[325px] absolute text-2xl font-bold flex items-center flex-row gap-3 pointer-events-none z-10"} `}>
+        <p className={`${isHidden? "hidden" : "top-[350px] absolute text-2xl font-bold flex items-center flex-row gap-3 pointer-events-none z-10"} `}>
           <img
             className="w-[22px] h-[22px] dark:invert"
             src={pointerIcon}
@@ -97,7 +135,8 @@ const WordDisplayArea = () => {
           Click to focus
         </p>
       )}
-      <div className={` ${isHidden ? "hidden" : ""} ${isBlur ? "flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 blur-xs" : "flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 "}`}>
+      <p className={`${isHidden ? "hidden" : "text-[20px]"}`}>{ start }s</p>
+      <div onBlur={() => setBlur(true)} ref={containerRef} onKeyDown={handleKeyDown} onFocus={() => setBlur(false)} tabIndex={0} className={` ${isHidden ? "hidden" : ""} ${isBlur ? "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 blur-xs" : "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 "}`}>
         {words.map((word, wIdx) => (
         <span key={wIdx} className="mr-4">
           {word.split("").map((char, cIdx) => {

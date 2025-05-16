@@ -15,7 +15,7 @@ import {
 import DownloadIcon from "../assets/download_20dp_FFFFFF_FILL0_wght400_GRAD0_opsz20.png";
 import { ModeToggle } from "./mode-toggle";
 import { useContext } from "react";
-import { TimerContext } from "@/context/TimerContext";
+import { TimerContext } from "@/context/TimerStateContext";
 
 function Navbar() {
   const navigate = useNavigate();
