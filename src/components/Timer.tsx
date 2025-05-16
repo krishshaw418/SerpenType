@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from './ui/button';
 import { useContext } from 'react';
-import { TimerContext } from '@/context/TimerContext';
+import { TimerContext } from '@/context/TimerStateContext';
 function Timer() {
     const timerState = useContext(TimerContext);
 

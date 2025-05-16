@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Landing from "./Pages/Landing";
 import Metrics from "./Pages/Metrics";
-import { TimerProvider } from "./context/TimerContext";
+import { TimerProvider } from "./context/TimerStateContext";
 export default function App(){
     return (
     <div className="min-h-screen">
