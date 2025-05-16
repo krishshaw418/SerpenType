@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/tooltip";
 import RestartIcon from "../assets/refresh_20dp_000000_FILL0_wght400_GRAD0_opsz20.png";
 import pointerIcon from "@/assets/arrow_selector_tool_20dp_000000_FILL0_wght400_GRAD0_opsz20.png";
+// import Timer from "./Timer";
 
 const WordDisplayArea = () => {
   const [words, setWords] = useState<string[]>([]);
