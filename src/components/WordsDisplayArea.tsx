@@ -56,7 +56,7 @@ const WordDisplayArea = () => {
 
   useEffect(() => {
         setStart(time);
-    }, [time]);
+  }, [time]);
 
   const [isActive, setIsActive] = useState(false);
   useEffect(() => {
@@ -135,8 +135,8 @@ const WordDisplayArea = () => {
           Click to focus
         </p>
       )}
-      <p className={`${isHidden ? "hidden" : "text-[20px]"}`}>{ start }s</p>
-      <div onBlur={() => setBlur(true)} ref={containerRef} onKeyDown={handleKeyDown} onFocus={() => setBlur(false)} tabIndex={0} className={` ${isHidden ? "hidden" : ""} ${isBlur ? "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 blur-xs" : "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 "}`}>
+      <p className={`${isBlur?"hidden":""} ${isHidden ? "hidden" : "text-[20px]"}`}>{ start }s</p>
+      <div onBlur={() => {stopTimer(); setBlur(true)}} ref={containerRef} onKeyDown={handleKeyDown} onFocus={() => setBlur(false)} tabIndex={0} className={` ${isHidden ? "hidden" : ""} ${isBlur ? "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 blur-xs" : "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 "}`}>
         {words.map((word, wIdx) => (
         <span key={wIdx} className="mr-4">
           {word.split("").map((char, cIdx) => {
