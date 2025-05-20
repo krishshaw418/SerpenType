@@ -56,6 +56,7 @@ const WordDisplayArea = () => {
 
   useEffect(() => {
         setStart(time);
+        setRandomWords(); // To refresh the set of words for new set time
   }, [time]);
 
   const [isActive, setIsActive] = useState(false);
@@ -125,6 +126,7 @@ const WordDisplayArea = () => {
 
   return (
       <div className={"outline-none text-3xl font-mono items-center flex flex-col h-150 justify-center gap-5"}>
+      {/* overlay message */}
       {isBlur && (
         <p className={`${isHidden? "hidden" : "top-[350px] absolute text-2xl font-bold flex items-center flex-row gap-3 pointer-events-none z-10"} `}>
           <img
@@ -135,7 +137,9 @@ const WordDisplayArea = () => {
           Click to focus
         </p>
       )}
-      <p className={`${isBlur?"hidden":""} ${isHidden ? "hidden" : "text-[20px]"}`}>{ start }s</p>
+      {/* Timer */}
+      <p className={`${isHidden ? "hidden" : "font-sans text-[20px]"}`}>{ start }s</p>
+      {/* Words */}
       <div onBlur={() => {stopTimer(); setBlur(true)}} ref={containerRef} onKeyDown={handleKeyDown} onFocus={() => setBlur(false)} tabIndex={0} className={` ${isHidden ? "hidden" : ""} ${isBlur ? "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 blur-xs" : "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 "}`}>
         {words.map((word, wIdx) => (
         <span key={wIdx} className="mr-4">
@@ -146,10 +150,8 @@ const WordDisplayArea = () => {
             return (
               <span
                 key={cIdx}
-                className={`${getCharClass(typedChar, char, isCursor)} ${
-                  isCursor ? "bg-blue-100" : ""
-                }`}
-              >
+                // Removed background color to improve visibility of letters
+                className={`${getCharClass(typedChar, char, isCursor)}`}>
                 {char}
               </span>
             );

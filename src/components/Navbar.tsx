@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/tooltip";
 import DownloadIcon from "../assets/download_20dp_FFFFFF_FILL0_wght400_GRAD0_opsz20.png";
 import { ModeToggle } from "./mode-toggle";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { TimerContext } from "@/context/TimerStateContext";
 
 function Navbar() {
@@ -32,9 +32,9 @@ function Navbar() {
       <button className="cursor-pointer" onClick={() => navigate("/")}>SerpenType</button>
       </div>
       <div className="hidden md:flex gap-4">
-      <Button className="cursor-pointer" variant="ghost" onClick={() => timerState.setTime(15)}>15s</Button>
-      <Button className="cursor-pointer" variant="ghost" onClick={() => timerState.setTime(30)}>30s</Button>
-      <Button className="cursor-pointer" variant="ghost" onClick={() => timerState.setTime(60)}>60s</Button>
+      <Button className={`cursor-pointer ${timerState.time===15?"text-blue-700":""} hover:text-blue-500`} variant="ghost" onClick={() => timerState.setTime(15)}>15s</Button>
+      <Button className={`cursor-pointer ${timerState.time===30?"text-blue-700":""} hover:text-blue-500`} variant="ghost" onClick={() => timerState.setTime(30)}>30s</Button>
+      <Button className={`cursor-pointer ${timerState.time===60?"text-blue-700":""} hover:text-blue-500`} variant="ghost" onClick={() => timerState.setTime(60)}>60s</Button>
         <div className="flex items-center gap-5">
         <TooltipProvider>
           <Tooltip>
