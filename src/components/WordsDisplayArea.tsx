@@ -23,15 +23,16 @@ const WordDisplayArea = () => {
 
   const initial = time; // initial value for updated timer
 
-  const [start, setStart] = useState(time);
-  const [words, setWords] = useState<string[]>([]);
-  const [userInput, setUserInput] = useState<string[][]>([]);
-  const [wordIdx, setWordIdx] = useState(0);
-  const [charIdx, setCharIdx] = useState(0);
-  const [isBlur, setBlur] = useState(false);
-  const [isHidden, setHidden] = useState(false);
+  const [start, setStart] = useState(time); // To store the state of the timer as time flows
+  const [words, setWords] = useState<string[]>([]); // To hold the words genrated
+  const [userInput, setUserInput] = useState<string[][]>([]); // To hold the user input 
+  const [wordIdx, setWordIdx] = useState(0); // To store the index of the word in the array 
+  const [charIdx, setCharIdx] = useState(0); // To store the index of the character inside the current word
+  const [isBlur, setBlur] = useState(false); // To store the blur state of the div
+  const [isHidden, setHidden] = useState(false); // To hide the words when refreshed
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Function to set random words for Display Area
   const setRandomWords = () => {
     resetTimer();
     setHidden(true);
@@ -140,7 +141,12 @@ const WordDisplayArea = () => {
       {/* Timer */}
       <p className={`${isHidden ? "hidden" : "font-sans text-[20px]"}`}>{ start }s</p>
       {/* Words */}
-      <div onBlur={() => {stopTimer(); setBlur(true)}} ref={containerRef} onKeyDown={handleKeyDown} onFocus={() => setBlur(false)} tabIndex={0} className={` ${isHidden ? "hidden" : ""} ${isBlur ? "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 blur-xs" : "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 "}`}>
+      <div 
+      onBlur={() => {stopTimer(); setTimeout(()=>{setBlur(true);},250)}} 
+      ref={containerRef} onKeyDown={handleKeyDown} 
+      onFocus={() => setBlur(false)} 
+      tabIndex={0} 
+      className={` ${isHidden ? "hidden" : ""} ${isBlur ? "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 blur-xs" : "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 "}`}>
         {words.map((word, wIdx) => (
         <span key={wIdx} className="mr-4">
           {word.split("").map((char, cIdx) => {
