@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/tooltip";
 import DownloadIcon from "../assets/download_20dp_FFFFFF_FILL0_wght400_GRAD0_opsz20.png";
 import { ModeToggle } from "./mode-toggle";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { TimerContext } from "@/context/TimerStateContext";
 
 function Navbar() {
@@ -23,10 +23,13 @@ function Navbar() {
     if(!timerState) {
         throw new Error("TimerContext is not defined");
     }
-    const timerPreference = localStorage.getItem('timer');
-    if(timerPreference){
-      timerState.setTime(parseInt(timerPreference, 10));
-    }  
+    useEffect(()=>{
+      const timerPreference = localStorage.getItem('timer');
+      const parsedTime = parseInt(timerPreference ?? '30', 10);
+      if(!isNaN(parsedTime)){
+        timerState.setTime(parsedTime);
+      }
+    },[]);
   return (
     <nav className="flex justify-between items-center p-4 border-b">
       <div className="text-2xl font-bold flex gap-2">
