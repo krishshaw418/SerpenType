@@ -156,7 +156,6 @@ const WordDisplayArea = () => {
             return (
               <span
                 key={cIdx}
-                // Removed background color to improve visibility of letters
                 className={`${getCharClass(typedChar, char, isCursor)}`}>
                 {char}
               </span>

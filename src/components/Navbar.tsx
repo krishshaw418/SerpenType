@@ -23,6 +23,10 @@ function Navbar() {
     if(!timerState) {
         throw new Error("TimerContext is not defined");
     }
+    const timerPreference = localStorage.getItem('timer');
+    if(timerPreference){
+      timerState.setTime(parseInt(timerPreference, 10));
+    }  
   return (
     <nav className="flex justify-between items-center p-4 border-b">
       <div className="text-2xl font-bold flex gap-2">
@@ -35,15 +39,24 @@ function Navbar() {
       <Button 
       className={`cursor-pointer ${timerState.time===15?"text-blue-700":""} hover:text-blue-500`} 
       variant="ghost" 
-      onClick={() => timerState.setTime(15)}>15s</Button>
+      onClick={() => {
+        timerState.setTime(15);
+        localStorage.setItem('timer', '15');
+        }}>15s</Button>
       <Button 
       className={`cursor-pointer ${timerState.time===30?"text-blue-700":""} hover:text-blue-500`} 
       variant="ghost" 
-      onClick={() => timerState.setTime(30)}>30s</Button>
+      onClick={() => {
+        timerState.setTime(30);
+        localStorage.setItem('timer', '30');
+        }}>30s</Button>
       <Button 
       className={`cursor-pointer ${timerState.time===60?"text-blue-700":""} hover:text-blue-500`} 
       variant="ghost" 
-      onClick={() => timerState.setTime(60)}>60s</Button>
+      onClick={() => {
+        timerState.setTime(60);
+        localStorage.setItem('timer', '60');
+        }}>60s</Button>
         <div className="flex items-center gap-5">
         <TooltipProvider>
           <Tooltip>
