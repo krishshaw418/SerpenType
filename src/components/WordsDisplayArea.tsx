@@ -30,6 +30,7 @@ const WordDisplayArea = () => {
   const [charIdx, setCharIdx] = useState(0); // To store the index of the character inside the current word
   const [isBlur, setBlur] = useState(false); // To store the blur state of the div
   const [isHidden, setHidden] = useState(false); // To hide the words when refreshed
+  const [isLoading, setIsLoading] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Function to set random words for Display Area
@@ -43,6 +44,7 @@ const WordDisplayArea = () => {
       setWordIdx(0);
       setCharIdx(0);
       setHidden(false);
+      setIsLoading(false);
     }, 290);
   }
 
@@ -126,7 +128,8 @@ const WordDisplayArea = () => {
   };
 
   return (
-      <div className={"outline-none text-3xl font-mono items-center flex flex-col h-150 justify-center gap-5"}>
+      <>
+      {isLoading?<p className="flex flex-col justify-center items-center h-150">Loading...</p>:<div className={"outline-none text-3xl font-mono items-center flex flex-col h-150 justify-center gap-5"}>
       {/* overlay message */}
       {isBlur && (
         <p className={`${isHidden? "hidden" : "top-[350px] absolute text-2xl font-bold flex items-center flex-row gap-3 pointer-events-none z-10"} `}>
@@ -183,7 +186,8 @@ const WordDisplayArea = () => {
           </Tooltip>
         </TooltipProvider>
       </div>
-    </div>
+    </div>}
+      </>
   );
 };
 
