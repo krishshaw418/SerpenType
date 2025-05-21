@@ -11,7 +11,6 @@ import pointerIcon from "@/assets/arrow_selector_tool_20dp_000000_FILL0_wght400_
 import { useContext } from 'react';
 import { TimerContext } from '@/context/TimerStateContext';
 import { useNavigate } from "react-router-dom";
-// import { Button } from "./ui/button";
 
 const WordDisplayArea = () => {
   const navigate = useNavigate();
