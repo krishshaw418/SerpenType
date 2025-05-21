@@ -40,21 +40,21 @@ function Navbar() {
       </div>
       <div className="hidden md:flex gap-4">
       <Button 
-      className={`cursor-pointer ${timerState.time===15?"text-blue-700":""} hover:text-blue-500`} 
+      className={`cursor-pointer ${timerState.time===15?"text-blue-700":""} hover:text-white`} 
       variant="ghost" 
       onClick={() => {
         timerState.setTime(15);
         localStorage.setItem('timer', '15');
         }}>15s</Button>
       <Button 
-      className={`cursor-pointer ${timerState.time===30?"text-blue-700":""} hover:text-blue-500`} 
+      className={`cursor-pointer ${timerState.time===30?"text-blue-700":""} hover:text-white`} 
       variant="ghost" 
       onClick={() => {
         timerState.setTime(30);
         localStorage.setItem('timer', '30');
         }}>30s</Button>
       <Button 
-      className={`cursor-pointer ${timerState.time===60?"text-blue-700":""} hover:text-blue-500`} 
+      className={`cursor-pointer ${timerState.time===60?"text-blue-700":""} hover:text-white`} 
       variant="ghost" 
       onClick={() => {
         timerState.setTime(60);
