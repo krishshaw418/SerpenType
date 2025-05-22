@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 const WordDisplayArea = () => {
   const navigate = useNavigate();
-  const timerState = useContext(TimerContext);
+  const timerState = useContext(TimerContext); // Timer context to access timer state
   if(!timerState) {
         throw new Error("TimerContext is not defined");
     }
@@ -29,8 +29,8 @@ const WordDisplayArea = () => {
   const [charIdx, setCharIdx] = useState(0); // To store the index of the character inside the current word
   const [isBlur, setBlur] = useState(false); // To store the blur state of the div
   const [isHidden, setHidden] = useState(false); // To hide the words when refreshed
-  const [isLoading, setIsLoading] = useState(true);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(true); // For the Loader
+  const containerRef = useRef<HTMLDivElement>(null); // For referencing the div element to focus
 
   // Function to set random words for Display Area
   const setRandomWords = () => {
@@ -52,6 +52,7 @@ const WordDisplayArea = () => {
         setRandomWords();
   }, []);
 
+  // To focus on the div each time Restart Test is clicked
   useEffect(() => {
     containerRef.current?.focus();
   }, [words]);
@@ -61,6 +62,7 @@ const WordDisplayArea = () => {
         setRandomWords(); // To refresh the set of words for new set time
   }, [time]);
 
+  // Timer Logic 
   const [isActive, setIsActive] = useState(false);
   useEffect(() => {
       let interval: undefined | ReturnType<typeof setTimeout>;
@@ -87,6 +89,8 @@ const WordDisplayArea = () => {
       navigate('/metrics');
     },225)
   }
+
+  // keydown event handler
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     startTimer();
     if (words.length === 0) return;
@@ -120,6 +124,7 @@ const WordDisplayArea = () => {
     }
   };
 
+  // css for typing check
   const getCharClass = (typed: string, expected: string, isCursor: boolean) => {
     if (typed === "") return isCursor ? "border-b-2 border-blue-500" : "text-gray-400";
     if (typed === expected) return "text-green-500";
@@ -166,6 +171,7 @@ const WordDisplayArea = () => {
         </span>
       ))}
       </div>
+      {/* Restart Button */}
       <div className={`${isHidden ? "hidden" : ""} "flex items-center"`}>
         <TooltipProvider>
           <Tooltip>
