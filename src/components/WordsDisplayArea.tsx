@@ -136,7 +136,7 @@ const WordDisplayArea = () => {
       {isLoading?<p className="flex flex-col justify-center items-center h-150">Loading...</p>:<div className={"outline-none text-3xl font-mono items-center flex flex-col h-150 justify-center gap-5"}>
       {/* overlay message */}
       {isBlur && (
-        <p className={`${isHidden? "hidden" : "top-[350px] absolute text-2xl font-bold flex items-center flex-row gap-3 pointer-events-none z-10"} `}>
+        <p className={`${isHidden? "hidden" : "top-[280px] absolute text-2xl font-bold flex items-center flex-row gap-3 pointer-events-none z-10"} `}>
           <img
             className="w-[22px] h-[22px] dark:invert"
             src={pointerIcon}
