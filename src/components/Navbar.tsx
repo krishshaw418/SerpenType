@@ -6,40 +6,48 @@ import {
   // AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import DownloadIcon from "../assets/download_20dp_FFFFFF_FILL0_wght400_GRAD0_opsz20.png";
+// import {
+//   Tooltip,
+//   TooltipContent,
+//   TooltipProvider,
+//   TooltipTrigger,
+// } from "@/components/ui/tooltip";
+// import DownloadIcon from "../assets/download_20dp_FFFFFF_FILL0_wght400_GRAD0_opsz20.png";
 import { ModeToggle } from "./mode-toggle";
-import { useContext, useEffect } from "react";
-import { TimerContext } from "@/context/TimerStateContext";
+// import { useContext, useEffect } from "react";
+// import { TimerContext } from "@/context/TimerStateContext";
+// import infoIcon from "../assets/info_i_20dp_000000_FILL0_wght700_GRAD0_opsz20.png";
+// import keyboardIcon from "../assets/keyboard_20dp_000000_FILL0_wght700_GRAD0_opsz24.png";
+// import crownIcon from "../assets/crown_20dp_000000_FILL0_wght700_GRAD0_opsz20.png";
 
 function Navbar() {
   const navigate = useNavigate();
-  const timerState = useContext(TimerContext);
-    if(!timerState) {
-        throw new Error("TimerContext is not defined");
-    }
-    useEffect(()=>{
-      const timerPreference = localStorage.getItem('timer');
-      const parsedTime = parseInt(timerPreference ?? '30', 10);
-      if(!isNaN(parsedTime)){
-        timerState.setTime(parsedTime);
-      }
-    },[]);
+  // const timerState = useContext(TimerContext);
+  //   if(!timerState) {
+  //       throw new Error("TimerContext is not defined");
+  //   }
+  //   useEffect(()=>{
+  //     const timerPreference = localStorage.getItem('timer');
+  //     const parsedTime = parseInt(timerPreference ?? '30', 10);
+  //     if(!isNaN(parsedTime)){
+  //       timerState.setTime(parsedTime);
+  //     }
+  //   },[]);
   return (
     <nav className="flex justify-between items-center p-4 border-b">
-      <div className="text-2xl font-bold flex gap-2">
+      <div className="text-2xl font-bold flex gap-2 items-center">
       <Avatar>
       <AvatarImage src="/2-removebg-preview.png" alt="@shadcn" className="invert-0 dark:invert w-8 h-8"/>
       </Avatar>
       <button className="cursor-pointer" onClick={() => navigate("/")}>SerpenType</button>
       </div>
+      {/* <div className="flex gap-4 justify-center items-center">
+        <img src={keyboardIcon} alt="info-icon" className="w-[20px] h-[20px] dark:invert"/>
+        <img src={infoIcon} alt="info-icon" className="w-[19px] h-[19px] dark:invert"/>
+        <img src={crownIcon} alt="info-icon" className="w-[20px] h-[20px] dark:invert"/>
+      </div> */}
       <div className="hidden md:flex gap-4">
-      <Button 
+      {/* <Button 
       className={`cursor-pointer ${timerState.time===15?"text-blue-700":""} hover:text-white`} 
       variant="ghost" 
       onClick={() => {
@@ -71,8 +79,9 @@ function Navbar() {
           </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+        
+        </div> */}
         <ModeToggle/>
-        </div>
       </div>
 
       {/* Mobile Responsive Sheet */}
