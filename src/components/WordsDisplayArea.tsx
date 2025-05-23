@@ -11,10 +11,12 @@ import pointerIcon from "@/assets/arrow_selector_tool_20dp_000000_FILL0_wght400_
 import { useContext } from 'react';
 import { TimerContext } from '@/context/TimerStateContext';
 import { useNavigate } from "react-router-dom";
+import { MetricsContext } from "@/context/MetricsStateContext";
 
 const WordDisplayArea = () => {
   const navigate = useNavigate();
   const timerState = useContext(TimerContext); // Timer context to access timer state
+  const metricsState = useContext(MetricsContext); // Metrics context to access metrics state
   if(!timerState) {
         throw new Error("TimerContext is not defined");
     }
@@ -31,7 +33,7 @@ const WordDisplayArea = () => {
   const [isHidden, setHidden] = useState(false); // To hide the words when refreshed
   const [isLoading, setIsLoading] = useState(true); // For the Loader
   const containerRef = useRef<HTMLDivElement>(null); // For referencing the div element to focus
-
+  const [count, setCount] = useState(0);
   // Function to set random words for Display Area
   const setRandomWords = () => {
     resetTimer();
@@ -81,20 +83,25 @@ const WordDisplayArea = () => {
       setStart(initial);
   }
 
-  if(start === 0){
+  useEffect(() => {
+    if(start === 0){
     resetTimer();
     stopTimer();
     setHidden(true);
     setTimeout(()=>{
+      const raw =  Math.round((count/5)/(initial / 60));
+      metricsState?.setRaw(raw);
       navigate('/metrics');
     },225)
   }
+  }, [start]);
 
   // keydown event handler
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    setCount((prevs) => prevs + 1);
     startTimer();
     if (words.length === 0) return;
-
+    console.log("Key Pressed: ", e.key);
     // const currentWord = userInput[wordIdx];
     const wordLength = words[wordIdx].length;
 
@@ -118,6 +125,7 @@ const WordDisplayArea = () => {
       const updated = [...userInput];
       if (charIdx < wordLength) {
         updated[wordIdx][charIdx] = e.key;
+        // console.log("Updated: ", updated);
         setUserInput(updated);
         setCharIdx(charIdx + 1);
       }
