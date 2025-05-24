@@ -33,7 +33,7 @@ const WordDisplayArea = () => {
   const [isHidden, setHidden] = useState(false); // To hide the words when refreshed
   const [isLoading, setIsLoading] = useState(true); // For the Loader
   const containerRef = useRef<HTMLDivElement>(null); // For referencing the div element to focus
-  const [count, setCount] = useState(0);
+  const [characterCount, setCharacterCount] = useState(0); // For counting total number of characters typed (both correct & incorrect including spaces)
   // Function to set random words for Display Area
   const setRandomWords = () => {
     resetTimer();
@@ -89,7 +89,7 @@ const WordDisplayArea = () => {
     stopTimer();
     setHidden(true);
     setTimeout(()=>{
-      const raw =  Math.round((count/5)/(initial / 60));
+      const raw =  Math.round((characterCount/5)/(initial / 60));
       metricsState?.setRaw(raw);
       navigate('/metrics');
     },225)
@@ -98,7 +98,7 @@ const WordDisplayArea = () => {
 
   // keydown event handler
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    setCount((prevs) => prevs + 1);
+    setCharacterCount((prevs) => prevs + 1);
     startTimer();
     if (words.length === 0) return;
     console.log("Key Pressed: ", e.key);
