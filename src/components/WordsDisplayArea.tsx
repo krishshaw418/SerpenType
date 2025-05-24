@@ -34,6 +34,7 @@ const WordDisplayArea = () => {
   const [isLoading, setIsLoading] = useState(true); // For the Loader
   const containerRef = useRef<HTMLDivElement>(null); // For referencing the div element to focus
   const [characterCount, setCharacterCount] = useState(0); // For counting total number of characters typed (both correct & incorrect including spaces)
+  const [correctCharCount, setCorrectCharCount] = useState(0); // For counting total number of correct characters typed
   // Function to set random words for Display Area
   const setRandomWords = () => {
     resetTimer();
@@ -89,8 +90,10 @@ const WordDisplayArea = () => {
     stopTimer();
     setHidden(true);
     setTimeout(()=>{
-      const raw =  Math.round((characterCount/5)/(initial / 60));
+      const raw =  Math.round((characterCount/5)/(initial / 60)); // RAW logic
+      const wpm = Math.round((correctCharCount / 5) / (initial / 60)); // WPM logic
       metricsState?.setRaw(raw);
+      metricsState?.setWpm?.(wpm);
       navigate('/metrics');
     },225)
   }
@@ -124,11 +127,14 @@ const WordDisplayArea = () => {
     } else if (e.key.length === 1) {
       const updated = [...userInput];
       if (charIdx < wordLength) {
-        updated[wordIdx][charIdx] = e.key;
-        // console.log("Updated: ", updated);
-        setUserInput(updated);
-        setCharIdx(charIdx + 1);
+      updated[wordIdx][charIdx] = e.key;
+      // Compare input with expected character
+      if (e.key === words[wordIdx][charIdx]) {
+        setCorrectCharCount(prev => prev + 1);
       }
+      setUserInput(updated);
+      setCharIdx(charIdx + 1);
+    }
     }
   };
 
