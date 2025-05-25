@@ -17,6 +17,9 @@ const WordDisplayArea = () => {
   const navigate = useNavigate();
   const timerState = useContext(TimerContext); // Timer context to access timer state
   const metricsState = useContext(MetricsContext); // Metrics context to access metrics state
+  if(!metricsState){
+    throw new Error("MetricsContext is not defined");
+  }
   if(!timerState) {
         throw new Error("TimerContext is not defined");
     }
@@ -33,8 +36,9 @@ const WordDisplayArea = () => {
   const [isHidden, setHidden] = useState(false); // To hide the words when refreshed
   const [isLoading, setIsLoading] = useState(true); // For the Loader
   const containerRef = useRef<HTMLDivElement>(null); // For referencing the div element to focus
-  const [characterCount, setCharacterCount] = useState(0); // For counting total number of characters typed (both correct & incorrect including spaces)
-  const [correctCharCount, setCorrectCharCount] = useState(0); // For counting total number of correct characters typed
+  // const [characterCount, setCharacterCount] = useState(0); // For counting total number of characters typed (both correct & incorrect including spaces)
+  // const [correctCharCount, setCorrectCharCount] = useState(0); // For counting total number of correct characters typed
+  // const [incorrectCharCount, setIncorrectCharCount] = useState(0); // For counting total number of incorrect characters typed
   // Function to set random words for Display Area
   const setRandomWords = () => {
     resetTimer();
@@ -90,10 +94,15 @@ const WordDisplayArea = () => {
     stopTimer();
     setHidden(true);
     setTimeout(()=>{
-      const raw =  Math.round((characterCount/5)/(initial / 60)); // RAW logic
-      const wpm = Math.round((correctCharCount / 5) / (initial / 60)); // WPM logic
-      metricsState?.setRaw(raw);
+      const raw =  Math.round((metricsState.characterCount/5)/(initial / 60)); // RAW logic
+      const wpm = Math.round((metricsState?.correctCharCount / 5) / (initial / 60)); // WPM logic
+      const accuracy = Math.round((metricsState?.correctCharCount / metricsState?.characterCount) * 100);
+      console.log("Total characters typed:", metricsState?.characterCount);
+      console.log("Total correct charcters typed: ", metricsState?.correctCharCount);
+      console.log("Accuracy: ", accuracy);
+      metricsState?.setRaw?.(raw);
       metricsState?.setWpm?.(wpm);
+      metricsState?.setAccuracy?.(accuracy);
       navigate('/metrics');
     },225)
   }
@@ -101,7 +110,7 @@ const WordDisplayArea = () => {
 
   // keydown event handler
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    setCharacterCount((prevs) => prevs + 1);
+    metricsState?.setCharacterCount((prevs) => prevs + 1);
     startTimer();
     if (words.length === 0) return;
     console.log("Key Pressed: ", e.key);
@@ -124,13 +133,14 @@ const WordDisplayArea = () => {
       e.preventDefault();
       setWordIdx((prev) => Math.min(prev + 1, words.length - 1));
       setCharIdx(0);
+      metricsState?.setCorrectCharCount(prev => prev + 1)
     } else if (e.key.length === 1) {
       const updated = [...userInput];
       if (charIdx < wordLength) {
       updated[wordIdx][charIdx] = e.key;
       // Compare input with expected character
       if (e.key === words[wordIdx][charIdx]) {
-        setCorrectCharCount(prev => prev + 1);
+        metricsState?.setCorrectCharCount(prev => prev + 1);
       }
       setUserInput(updated);
       setCharIdx(charIdx + 1);
