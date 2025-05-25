@@ -8,6 +8,9 @@ function Metrics() {
         <PerformanceMetrics/>
         <h2>RAW: {metricState?.raw}</h2>
         <h2>WPM: {metricState?.wpm}</h2>
+        <h2>Accuracy: {metricState?.accuracy} %</h2>
+        <h2>Characters typed: {metricState?.characterCount}</h2>
+        <h2>Correct Characters typed: {metricState?.correctCharCount}</h2>
     </div>
   )
 }
