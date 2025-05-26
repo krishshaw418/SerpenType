@@ -36,11 +36,16 @@ const WordDisplayArea = () => {
   const [isHidden, setHidden] = useState(false); // To hide the words when refreshed
   const [isLoading, setIsLoading] = useState(true); // For the Loader
   const containerRef = useRef<HTMLDivElement>(null); // For referencing the div element to focus
-  // const [characterCount, setCharacterCount] = useState(0); // For counting total number of characters typed (both correct & incorrect including spaces)
-  // const [correctCharCount, setCorrectCharCount] = useState(0); // For counting total number of correct characters typed
   // const [incorrectCharCount, setIncorrectCharCount] = useState(0); // For counting total number of incorrect characters typed
   // Function to set random words for Display Area
   const setRandomWords = () => {
+    metricsState?.setRaw(0);
+    console.log("Raw reset to:", metricsState?.raw);
+    metricsState?.setWpm(0);
+    metricsState?.setAccuracy(0);
+    metricsState?.setCharacterCount(0);
+    metricsState?.setCorrectCharCount(0);
+    metricsState?.setIncorrectCharCount(0);
     resetTimer();
     setHidden(true);
     setTimeout(() => {
@@ -93,10 +98,12 @@ const WordDisplayArea = () => {
     resetTimer();
     stopTimer();
     setHidden(true);
+    const correct = metricsState?.correctCharCount || 0;
+    const total = metricsState?.characterCount || 0;
     setTimeout(()=>{
       const raw =  Math.round((metricsState.characterCount/5)/(initial / 60)); // RAW logic
       const wpm = Math.round((metricsState?.correctCharCount / 5) / (initial / 60)); // WPM logic
-      const accuracy = Math.round((metricsState?.correctCharCount / metricsState?.characterCount) * 100);
+      const accuracy = Math.round((correct / total) * 100);
       console.log("Total characters typed:", metricsState?.characterCount);
       console.log("Total correct charcters typed: ", metricsState?.correctCharCount);
       console.log("Accuracy: ", accuracy);
@@ -110,43 +117,68 @@ const WordDisplayArea = () => {
 
   // keydown event handler
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    metricsState?.setCharacterCount((prevs) => prevs + 1);
-    startTimer();
-    if (words.length === 0) return;
-    console.log("Key Pressed: ", e.key);
-    // const currentWord = userInput[wordIdx];
-    const wordLength = words[wordIdx].length;
+  startTimer();
+  if (words.length === 0) return;
+  e.preventDefault();
 
-    if (e.key === "Backspace") {
-      e.preventDefault();
+  const word = words[wordIdx];
+  const wordLength = word.length;
+  const updated = [...userInput];
 
-      if (charIdx > 0) {
-        const updated = [...userInput];
-        updated[wordIdx][charIdx - 1] = "";
-        setUserInput(updated);
-        setCharIdx(charIdx - 1);
-      } else if (wordIdx > 0) {
-        setWordIdx(wordIdx - 1);
-        setCharIdx(words[wordIdx - 1].length);
+  if (e.key === "Backspace") {
+    if (charIdx > 0) {
+      const prevChar = updated[wordIdx][charIdx - 1];
+      if (prevChar !== "") {
+        metricsState?.setCharacterCount(prev => Math.max(0, prev - 1));
+
+        // Correct or incorrect removal
+        if (prevChar === word[charIdx - 1]) {
+          metricsState?.setCorrectCharCount(prev => Math.max(0, prev - 1));
+        } else {
+          metricsState?.setIncorrectCharCount(prev => Math.max(0, prev - 1));
+        }
       }
-    } else if (e.key === " ") {
-      e.preventDefault();
-      setWordIdx((prev) => Math.min(prev + 1, words.length - 1));
-      setCharIdx(0);
-      metricsState?.setCorrectCharCount(prev => prev + 1)
-    } else if (e.key.length === 1) {
-      const updated = [...userInput];
-      if (charIdx < wordLength) {
-      updated[wordIdx][charIdx] = e.key;
-      // Compare input with expected character
-      if (e.key === words[wordIdx][charIdx]) {
-        metricsState?.setCorrectCharCount(prev => prev + 1);
-      }
+
+      updated[wordIdx][charIdx - 1] = "";
       setUserInput(updated);
+      setCharIdx(charIdx - 1);
+    } else if (wordIdx > 0) {
+      setWordIdx(wordIdx - 1);
+      setCharIdx(words[wordIdx - 1].length);
+    }
+
+  } else if (e.key === " ") {
+  metricsState?.setCharacterCount(prev => prev + 1);
+
+  const typedWord = updated[wordIdx].join("");
+  const isWordCorrect = typedWord === word;
+
+  if (isWordCorrect) {
+    // metricsState?.setCorrectWordCount?.(prev => prev + 1);
+    metricsState?.setCorrectCharCount(prev => prev + 1);
+  } else {
+    metricsState?.setIncorrectCharCount(prev => prev + 1);
+  }
+
+  setWordIdx(prev => Math.min(prev + 1, words.length - 1));
+  setCharIdx(0);
+}else if (e.key.length === 1) {
+    if (charIdx < wordLength) {
+      updated[wordIdx][charIdx] = e.key;
+      setUserInput(updated);
+
+      metricsState?.setCharacterCount(prev => prev + 1);
+
+      if (e.key === word[charIdx]) {
+        metricsState?.setCorrectCharCount(prev => prev + 1);
+      } else {
+        metricsState?.setIncorrectCharCount(prev => prev + 1);
+      }
+
       setCharIdx(charIdx + 1);
     }
-    }
-  };
+  }
+};
 
   // css for typing check
   const getCharClass = (typed: string, expected: string, isCursor: boolean) => {
