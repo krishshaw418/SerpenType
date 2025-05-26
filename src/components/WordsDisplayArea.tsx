@@ -118,7 +118,7 @@ const WordDisplayArea = () => {
   }
   }, [start]);
 
-  useEffect(() => {
+useEffect(() => {
   if (!cursorRef.current || !containerRef.current) return;
 
   const cursor = cursorRef.current;
@@ -127,23 +127,22 @@ const WordDisplayArea = () => {
   const cursorRect = cursor.getBoundingClientRect();
   const containerRect = container.getBoundingClientRect();
 
-  // If cursor is below visible area
-  if (cursorRect.bottom > containerRect.bottom || cursorRect.top < containerRect.top) {
-    setEnableScroll(true);
+  const isCursorBelow = cursorRect.bottom > containerRect.bottom - 8;
+  const isCursorAbove = cursorRect.top < containerRect.top;
+
+  if (isCursorBelow || isCursorAbove) {
+    setEnableScroll(true); // temporarily enable scroll
+
     container.scrollBy({
-      top: cursorRect.bottom - containerRect.bottom + 8, // scroll just enough
+      top: cursorRect.bottom - containerRect.bottom + 8,
       behavior: "smooth",
     });
-  }
 
-  // If cursor is above visible area
-  // if (cursorRect.top < containerRect.top) {
-  //   container.scrollBy({
-  //     top: cursorRect.top - containerRect.top - 8,
-  //     behavior: "smooth",
-  //   });
-  // }
+    // Lock scroll again after a short delay
+    setTimeout(() => setEnableScroll(false), 100);
+  }
 }, [charIdx, wordIdx]);
+
 
 
   // keydown event handler
@@ -243,7 +242,7 @@ const WordDisplayArea = () => {
       className={`
       ${isHidden ? "hidden" : ""}
       ${isBlur ? "blur-xs" : ""}
-      ${enableScroll ? "overflow-y-auto" : "overflow-hidden"}
+      ${enableScroll ? "overflow-y-auto" : "overflow-y-hidden"}
       hide-scrollbar h-32 pl-[38px] flex flex-wrap max-w-7xl items-center gap-2 outline-none
       `}>
         {words.map((word, wIdx) => (
@@ -251,20 +250,13 @@ const WordDisplayArea = () => {
           {word.split("").map((char, cIdx) => {
             const typedChar = userInput[wIdx]?.[cIdx] || "";
             const isCursor = wordIdx === wIdx && charIdx === cIdx;
-
             return (
-              // <span
-              //   key={cIdx}
-              //   className={`${getCharClass(typedChar, char, isCursor)}`}>
-              //   {char}
-              // </span>
               <span
-  key={cIdx}
-  ref={isCursor ? cursorRef : null} // only the active cursor gets the ref
-  className={`${getCharClass(typedChar, char, isCursor)}`}
->
-  {char}
-</span>
+              key={cIdx}
+              ref={isCursor ? cursorRef : null} // only the active cursor gets the ref
+              className={`${getCharClass(typedChar, char, isCursor)}`}>
+                {char}
+              </span>
             );
           })}
         </span>
