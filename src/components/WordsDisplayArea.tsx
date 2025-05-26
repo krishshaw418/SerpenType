@@ -36,7 +36,8 @@ const WordDisplayArea = () => {
   const [isHidden, setHidden] = useState(false); // To hide the words when refreshed
   const [isLoading, setIsLoading] = useState(true); // For the Loader
   const containerRef = useRef<HTMLDivElement>(null); // For referencing the div element to focus
-  // const [incorrectCharCount, setIncorrectCharCount] = useState(0); // For counting total number of incorrect characters typed
+  const cursorRef = useRef<HTMLSpanElement>(null);
+
   // Function to set random words for Display Area
   const setRandomWords = () => {
     metricsState?.setRaw(0);
@@ -49,7 +50,7 @@ const WordDisplayArea = () => {
     resetTimer();
     setHidden(true);
     setTimeout(() => {
-      const generatedWords = generate(30) as string[];
+      const generatedWords = generate(200) as string[];
       setWords(generatedWords);
       setUserInput(generatedWords.map((w) => Array(w.length).fill("")));
       setWordIdx(0);
@@ -115,6 +116,33 @@ const WordDisplayArea = () => {
   }
   }, [start]);
 
+  useEffect(() => {
+  if (!cursorRef.current || !containerRef.current) return;
+
+  const cursor = cursorRef.current;
+  const container = containerRef.current;
+
+  const cursorRect = cursor.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+
+  // If cursor is below visible area
+  if (cursorRect.bottom > containerRect.bottom) {
+    container.scrollBy({
+      top: cursorRect.bottom - containerRect.bottom + 8, // scroll just enough
+      behavior: "smooth",
+    });
+  }
+
+  // If cursor is above visible area
+  if (cursorRect.top < containerRect.top) {
+    container.scrollBy({
+      top: cursorRect.top - containerRect.top - 8,
+      behavior: "smooth",
+    });
+  }
+}, [charIdx, wordIdx]);
+
+
   // keydown event handler
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
   startTimer();
@@ -162,7 +190,7 @@ const WordDisplayArea = () => {
 
   setWordIdx(prev => Math.min(prev + 1, words.length - 1));
   setCharIdx(0);
-}else if (e.key.length === 1) {
+  }else if (e.key.length === 1) {
     if (charIdx < wordLength) {
       updated[wordIdx][charIdx] = e.key;
       setUserInput(updated);
@@ -176,9 +204,9 @@ const WordDisplayArea = () => {
       }
 
       setCharIdx(charIdx + 1);
+      }
     }
-  }
-};
+  };
 
   // css for typing check
   const getCharClass = (typed: string, expected: string, isCursor: boolean) => {
@@ -209,7 +237,7 @@ const WordDisplayArea = () => {
       ref={containerRef} onKeyDown={handleKeyDown} 
       onFocus={() => setBlur(false)} 
       tabIndex={0} 
-      className={` ${isHidden ? "hidden" : ""} ${isBlur ? "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 blur-xs" : "outline-none flex justify-center flex-wrap max-w-5xl w-fit items-center gap-2 "}`}>
+      className={` ${isHidden ? "hidden" : ""} ${isBlur ? "outline-none hide-scrollbar pl-[38px] h-32 overflow-y-auto flex flex-wrap max-w-7xl items-center gap-2 blur-xs" : "outline-none hide-scrollbar pl-[38px] h-32 overflow-y-auto flex flex-wrap max-w-7xl items-center gap-2 "}`}>
         {words.map((word, wIdx) => (
         <span key={wIdx} className="mr-4">
           {word.split("").map((char, cIdx) => {
@@ -217,11 +245,18 @@ const WordDisplayArea = () => {
             const isCursor = wordIdx === wIdx && charIdx === cIdx;
 
             return (
+              // <span
+              //   key={cIdx}
+              //   className={`${getCharClass(typedChar, char, isCursor)}`}>
+              //   {char}
+              // </span>
               <span
-                key={cIdx}
-                className={`${getCharClass(typedChar, char, isCursor)}`}>
-                {char}
-              </span>
+  key={cIdx}
+  ref={isCursor ? cursorRef : null} // only the active cursor gets the ref
+  className={`${getCharClass(typedChar, char, isCursor)}`}
+>
+  {char}
+</span>
             );
           })}
         </span>
@@ -247,8 +282,8 @@ const WordDisplayArea = () => {
           </Tooltip>
         </TooltipProvider>
       </div>
-    </div>}
-      </>
+      </div>}
+    </>
   );
 };
 
