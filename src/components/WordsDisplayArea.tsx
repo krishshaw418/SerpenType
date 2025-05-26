@@ -37,6 +37,8 @@ const WordDisplayArea = () => {
   const [isLoading, setIsLoading] = useState(true); // For the Loader
   const containerRef = useRef<HTMLDivElement>(null); // For referencing the div element to focus
   const cursorRef = useRef<HTMLSpanElement>(null);
+  const [enableScroll, setEnableScroll] = useState(false);
+
 
   // Function to set random words for Display Area
   const setRandomWords = () => {
@@ -126,7 +128,8 @@ const WordDisplayArea = () => {
   const containerRect = container.getBoundingClientRect();
 
   // If cursor is below visible area
-  if (cursorRect.bottom > containerRect.bottom) {
+  if (cursorRect.bottom > containerRect.bottom || cursorRect.top < containerRect.top) {
+    setEnableScroll(true);
     container.scrollBy({
       top: cursorRect.bottom - containerRect.bottom + 8, // scroll just enough
       behavior: "smooth",
@@ -134,12 +137,12 @@ const WordDisplayArea = () => {
   }
 
   // If cursor is above visible area
-  if (cursorRect.top < containerRect.top) {
-    container.scrollBy({
-      top: cursorRect.top - containerRect.top - 8,
-      behavior: "smooth",
-    });
-  }
+  // if (cursorRect.top < containerRect.top) {
+  //   container.scrollBy({
+  //     top: cursorRect.top - containerRect.top - 8,
+  //     behavior: "smooth",
+  //   });
+  // }
 }, [charIdx, wordIdx]);
 
 
@@ -237,7 +240,12 @@ const WordDisplayArea = () => {
       ref={containerRef} onKeyDown={handleKeyDown} 
       onFocus={() => setBlur(false)} 
       tabIndex={0} 
-      className={` ${isHidden ? "hidden" : ""} ${isBlur ? "outline-none hide-scrollbar pl-[38px] h-32 overflow-y-auto flex flex-wrap max-w-7xl items-center gap-2 blur-xs" : "outline-none hide-scrollbar pl-[38px] h-32 overflow-y-auto flex flex-wrap max-w-7xl items-center gap-2 "}`}>
+      className={`
+      ${isHidden ? "hidden" : ""}
+      ${isBlur ? "blur-xs" : ""}
+      ${enableScroll ? "overflow-y-auto" : "overflow-hidden"}
+      hide-scrollbar h-32 pl-[38px] flex flex-wrap max-w-7xl items-center gap-2 outline-none
+      `}>
         {words.map((word, wIdx) => (
         <span key={wIdx} className="mr-4">
           {word.split("").map((char, cIdx) => {
