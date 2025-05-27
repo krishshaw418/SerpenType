@@ -43,7 +43,6 @@ const WordDisplayArea = () => {
   // Function to set random words for Display Area
   const setRandomWords = () => {
     metricsState?.setRaw(0);
-    console.log("Raw reset to:", metricsState?.raw);
     metricsState?.setWpm(0);
     metricsState?.setAccuracy(0);
     metricsState?.setCharacterCount(0);
@@ -52,19 +51,22 @@ const WordDisplayArea = () => {
     resetTimer();
     setHidden(true);
     setTimeout(() => {
-      const generatedWords = generate(200) as string[];
+      const generatedWords = generate(30) as string[];
       setWords(generatedWords);
       setUserInput(generatedWords.map((w) => Array(w.length).fill("")));
       setWordIdx(0);
       setCharIdx(0);
       setHidden(false);
       setIsLoading(false);
-    }, 290);
+    }, 100);
   }
 
+  const hasInitialized = useRef(false);
   useEffect(() => {
-    // Generate 30 random words on mount
-        setRandomWords();
+    if (!hasInitialized.current) {
+      hasInitialized.current = true;
+      setRandomWords();
+    }
   }, []);
 
   // To focus on the div each time Restart Test is clicked
@@ -73,9 +75,11 @@ const WordDisplayArea = () => {
   }, [words]);
 
   useEffect(() => {
-        setStart(time);
-        setRandomWords(); // To refresh the set of words for new set time
-  }, [time]);
+  if (hasInitialized.current) {
+    setStart(time);
+    setRandomWords();
+  }
+}, [time]);
 
   // Timer Logic 
   const [isActive, setIsActive] = useState(false);
@@ -107,9 +111,6 @@ const WordDisplayArea = () => {
       const raw =  Math.round((metricsState.characterCount/5)/(initial / 60)); // RAW logic
       const wpm = Math.round((metricsState?.correctCharCount / 5) / (initial / 60)); // WPM logic
       const accuracy = Math.round((correct / total) * 100);
-      console.log("Total characters typed:", metricsState?.characterCount);
-      console.log("Total correct charcters typed: ", metricsState?.correctCharCount);
-      console.log("Accuracy: ", accuracy);
       metricsState?.setRaw?.(raw);
       metricsState?.setWpm?.(wpm);
       metricsState?.setAccuracy?.(accuracy);
@@ -118,7 +119,7 @@ const WordDisplayArea = () => {
   }
   }, [start]);
 
-useEffect(() => {
+  useEffect(() => {
   if (!cursorRef.current || !containerRef.current) return;
 
   const cursor = cursorRef.current;
@@ -141,7 +142,7 @@ useEffect(() => {
     // Lock scroll again after a short delay
     setTimeout(() => setEnableScroll(false), 100);
   }
-}, [charIdx, wordIdx]);
+  }, [charIdx, wordIdx]);
 
 
 
