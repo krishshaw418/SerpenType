@@ -38,7 +38,18 @@ const WordDisplayArea = () => {
   const containerRef = useRef<HTMLDivElement>(null); // For referencing the div element to focus
   const cursorRef = useRef<HTMLSpanElement>(null);
   const [enableScroll, setEnableScroll] = useState(false);
-
+  const [characterCountPerSec, setCharacterCountPerSec] = useState(0);
+  const [correctCharCountPerSec, setCorrectCharCountPerSec] = useState(0);
+  // const [rawWordPerMinute, setRawWordPerMinute] = useState<number[]>([]);
+  // const rawRef = useRef<number[]>([0]);
+  // const [wordPerMinute, setWordPerMinute] = useState<number[]>([]);
+  // const wpmRef = useRef<number[]>([0]);
+  const rawWordPerMinute = metricsState?.rawPerSec;
+  const setRawWordPerMinute = metricsState?.setRawPerSec;
+  const rawRef = metricsState?.rawRef;
+  const wordPerMinute = metricsState?.wpmPerSec;
+  const setWordPerMinute = metricsState?.setWpmPerSec;
+  const wpmRef = metricsState?.wpmRef;
 
   // Function to set random words for Display Area
   const setRandomWords = () => {
@@ -50,6 +61,8 @@ const WordDisplayArea = () => {
     metricsState?.setIncorrectCharCount(0);
     resetTimer();
     setHidden(true);
+    setRawWordPerMinute([]);
+    setWordPerMinute([]);
     setTimeout(() => {
       const generatedWords = generate(30) as string[];
       setWords(generatedWords);
@@ -100,23 +113,61 @@ const WordDisplayArea = () => {
       setStart(initial);
   }
 
+  // To return the last non zero element from the metrics array
+  // function getLastNonZero(arr: number[]): number {
+  // for (let i = arr.length - 1; i >= 0; i--) {
+  //   if (arr[i] !== 0) return arr[i];
+  //   }
+  //   return 0; 
+  // }
+  function getAverageNonZero(arr: number[]): number {
+  const nonZero = arr.filter(n => n !== 0);
+  if (nonZero.length === 0) return 0;
+  const sum = nonZero.reduce((acc, val) => acc + val, 0);
+  return Math.round(sum / nonZero.length);
+}
+
+
+
   useEffect(() => {
+    if(!isActive) return;
+    const elapsedTime = initial - start;
+    if(elapsedTime >= 0){
+      const raw =  Math.round((characterCountPerSec / 5)/(1 / 60));
+      const wpm = Math.round((correctCharCountPerSec / 5)/(1 / 60));
+      const newRawArray =
+      rawWordPerMinute.length === 1 && rawWordPerMinute[0] === 0
+        ? [raw]
+        : [...rawWordPerMinute, raw];
+      setRawWordPerMinute(newRawArray);
+      rawRef.current = newRawArray;
+      const newWpmArray =
+      wordPerMinute.length === 1 && wordPerMinute[0] === 0
+        ? [wpm]
+        : [...wordPerMinute, wpm];
+      setWordPerMinute(newWpmArray);  
+      wpmRef.current = newWpmArray;
+      console.log("raw: ", raw);
+      console.log("wpm: ", wpm);
+      setCharacterCountPerSec(0);
+      setCorrectCharCountPerSec(0);
+    }
     if(start === 0){
     resetTimer();
     stopTimer();
     setHidden(true);
-    const correct = metricsState?.correctCharCount || 0;
-    const total = metricsState?.characterCount || 0;
+    const lastValidRaw = getAverageNonZero(rawRef.current);
+    const lastValidWpm = getAverageNonZero(wpmRef.current);
     setTimeout(()=>{
-      const raw =  Math.round((metricsState.characterCount/5)/(initial / 60)); // RAW logic
-      const wpm = Math.round((metricsState?.correctCharCount / 5) / (initial / 60)); // WPM logic
-      const accuracy = Math.round((correct / total) * 100);
-      metricsState?.setRaw?.(raw);
-      metricsState?.setWpm?.(wpm);
-      metricsState?.setAccuracy?.(accuracy);
+      console.log("Raw metrics:", rawRef.current);
+      console.log("Wpm metrics:", wpmRef.current);
+      metricsState?.setRaw(lastValidRaw);
+      metricsState?.setWpm(lastValidWpm);
       navigate('/metrics');
-    },225)
-  }
+      rawRef.current = [0];
+      wpmRef.current = [0];
+    },225);
+    }
   }, [start]);
 
   useEffect(() => {
@@ -144,10 +195,8 @@ const WordDisplayArea = () => {
   }
   }, [charIdx, wordIdx]);
 
-
-
-  // keydown event handler
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+// keydown event handler
+const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
   startTimer();
   if (words.length === 0) return;
   e.preventDefault();
@@ -161,10 +210,11 @@ const WordDisplayArea = () => {
       const prevChar = updated[wordIdx][charIdx - 1];
       if (prevChar !== "") {
         metricsState?.setCharacterCount(prev => Math.max(0, prev - 1));
+        setCharacterCountPerSec(prev => Math.max(0, prev - 1));
 
-        // Correct or incorrect removal
         if (prevChar === word[charIdx - 1]) {
           metricsState?.setCorrectCharCount(prev => Math.max(0, prev - 1));
+          setCorrectCharCountPerSec(prev => Math.max(0, prev - 1));
         } else {
           metricsState?.setIncorrectCharCount(prev => Math.max(0, prev - 1));
         }
@@ -173,43 +223,58 @@ const WordDisplayArea = () => {
       updated[wordIdx][charIdx - 1] = "";
       setUserInput(updated);
       setCharIdx(charIdx - 1);
+
     } else if (wordIdx > 0) {
       setWordIdx(wordIdx - 1);
       setCharIdx(words[wordIdx - 1].length);
     }
 
   } else if (e.key === " ") {
-  metricsState?.setCharacterCount(prev => prev + 1);
+    // Count the space
+    metricsState?.setCharacterCount(prev => prev + 1);
+    setCharacterCountPerSec(prev => prev + 1);
 
-  const typedWord = updated[wordIdx].join("");
-  const isWordCorrect = typedWord === word;
+    const typedWord = updated[wordIdx].join("");
+    const expectedWord = word;
 
-  if (isWordCorrect) {
-    // metricsState?.setCorrectWordCount?.(prev => prev + 1);
-    metricsState?.setCorrectCharCount(prev => prev + 1);
-  } else {
-    metricsState?.setIncorrectCharCount(prev => prev + 1);
-  }
-
-  setWordIdx(prev => Math.min(prev + 1, words.length - 1));
-  setCharIdx(0);
-  }else if (e.key.length === 1) {
-    if (charIdx < wordLength) {
-      updated[wordIdx][charIdx] = e.key;
-      setUserInput(updated);
-
-      metricsState?.setCharacterCount(prev => prev + 1);
-
-      if (e.key === word[charIdx]) {
-        metricsState?.setCorrectCharCount(prev => prev + 1);
-      } else {
-        metricsState?.setIncorrectCharCount(prev => prev + 1);
-      }
-
-      setCharIdx(charIdx + 1);
-      }
+    let correctChars = 0;
+    for (let i = 0; i < expectedWord.length; i++) {
+      if (typedWord[i] === expectedWord[i]) correctChars++;
     }
-  };
+
+    const typedLength = updated[wordIdx].filter((c) => c !== "").length;
+
+    metricsState?.setCorrectCharCount(prev => prev + correctChars);
+    setCorrectCharCountPerSec(prev => prev + correctChars);
+    metricsState?.setIncorrectCharCount(prev => prev + (typedLength - correctChars));
+
+    // Move to next word
+    setWordIdx(prev => Math.min(prev + 1, words.length - 1));
+    setCharIdx(0);
+
+  } else if (e.key.length === 1) {
+    if (charIdx < wordLength) {
+      const prevChar = updated[wordIdx][charIdx];
+      updated[wordIdx][charIdx] = e.key;
+
+      if (prevChar !== e.key) {
+        metricsState?.setCharacterCount(prev => prev + 1);
+        setCharacterCountPerSec(prev => prev + 1);
+
+        if (e.key === word[charIdx]) {
+          metricsState?.setCorrectCharCount(prev => prev + 1);
+          setCorrectCharCountPerSec(prev => prev + 1);
+        } else {
+          metricsState?.setIncorrectCharCount(prev => prev + 1);
+        }
+      }
+
+      setUserInput(updated);
+      setCharIdx(charIdx + 1);
+    }
+  }
+};
+
 
   // css for typing check
   const getCharClass = (typed: string, expected: string, isCursor: boolean) => {
