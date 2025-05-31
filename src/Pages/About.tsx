@@ -40,6 +40,7 @@ function About() {
         <p>💻 Open to all.</p>
         <p>🔐 Privacy-first — we don't store or track anything.</p>
         <p>🌟 Like it? Give it a star on GitHub and help spread the word!</p>
+        <p className="pt-2">Thank you for using SerpenType.</p>
       </DialogDescription>
     </DialogHeader>
     </DialogContent>
