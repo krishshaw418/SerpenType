@@ -5,13 +5,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import DownloadIcon from "../assets/download_20dp_FFFFFF_FILL0_wght400_GRAD0_opsz20.png";
-import infoIcon from "../assets/info_i_20dp_000000_FILL0_wght500_GRAD0_opsz20.png";
+// import infoIcon from "../assets/info_i_20dp_000000_FILL0_wght500_GRAD0_opsz20.png";
 import keyboardIcon from "../assets/keyboard_20dp_000000_FILL0_wght400_GRAD0_opsz20.png";
 import crownIcon from "../assets/crown_20dp_000000_FILL0_wght400_GRAD0_opsz20.png";
 import { useContext, useEffect } from "react";
 import { TimerContext } from "@/context/TimerStateContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import About from "@/Pages/About";
 function Toolbar() {
     const navigate = useNavigate();
     const timerState = useContext(TimerContext);
@@ -38,16 +39,8 @@ function Toolbar() {
           </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip>
-          <TooltipTrigger className="h-8 rounded-md has-[>svg]:px-2.5 cursor-pointer" onClick={() => navigate("/metrics")}>
-            <img src={infoIcon} alt="info-icon" className="w-[19px] h-[19px] dark:invert"/>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>About</p>
-          </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+          {/* <img src={infoIcon} alt="info-icon" className="w-[19px] h-[19px] dark:invert"/> */}
+          <About/>
         <TooltipProvider>
           <Tooltip>
           <TooltipTrigger className="h-8 rounded-md has-[>svg]:px-2.5 cursor-pointer" onClick={() => navigate("/metrics")}>
